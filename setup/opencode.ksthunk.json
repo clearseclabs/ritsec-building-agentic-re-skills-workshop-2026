@@ -1,0 +1,38 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "agentic-re-skills/deepseek/deepseek-v4.1-flash-1017",
+  "mcp": {
+    "pyghidra-mcp-ksthunk": {
+      "type": "remote",
+      "url": "https://ritsec-agentic-re-skills.clearseclabs.com/mcp",
+      "headers": {
+        "X-MCP-Target": "http://pyghidra-mcp-ksthunk:8000/mcp"
+      },
+      "enabled": true,
+      "oauth": false
+    }
+  },
+  "provider": {
+    "agentic-re-skills": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "CSL Agentic RE Skills Workshop",
+      "options": {
+        "baseURL": "https://ritsec-agentic-re-skills.clearseclabs.com/llm/v1",
+        "apiKey": "{env:LLM_GATEWAY_API_KEY}"
+      },
+      "models": {
+        "deepseek/deepseek-v4.1-flash-1017": { "name": "CSL DeepSeek V4.1 Flash" },
+        "qwen/qwen3.7-flash": { "name": "CSL Qwen3.7 Flash" },
+        "qwen/qwen3.8-27b": { "name": "CSL Qwen3.8 27B" },
+        "openai/gpt-oss-20b": { "name": "CSL gpt-oss-20b" },
+        "minimax/minimax-m3.1-flash": { "name": "CSL MiniMax M3.1 Flash" }
+      }
+    }
+  },
+  "permission": {
+    "edit": "allow",
+    "bash": "allow",
+    "pyghidra-mcp-ksthunk_*": "allow",
+    "external_directory": "allow"
+  }
+}

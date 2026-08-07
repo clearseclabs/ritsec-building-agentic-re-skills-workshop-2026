@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ritsec-agentic-re-skills.clearseclabs.com/schemas/patch-tuesday-report-v1.json",
+  "title": "Patch Tuesday Diff Report",
+  "type": "object",
+  "required": ["schema_version", "cve", "provenance", "patch_hypothesis", "evidence", "unknowns"],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "cve": { "type": "string", "pattern": "^CVE-[0-9]{4}-[0-9]{4,}$" },
+    "provenance": {
+      "type": "object",
+      "required": ["component", "architecture", "branch", "pre", "post"],
+      "properties": {
+        "component": { "type": "string" },
+        "architecture": { "type": "string" },
+        "branch": { "type": "string" },
+        "pre": { "$ref": "#/$defs/binary" },
+        "post": { "$ref": "#/$defs/binary" }
+      },
+      "additionalProperties": false
+    },
+    "patch_hypothesis": {
+      "type": "object",
+      "required": ["function", "old_behavior", "new_behavior", "security_effect", "confidence"],
+      "properties": {
+        "function": { "type": "string" },
+        "old_behavior": { "type": "string" },
+        "new_behavior": { "type": "string" },
+        "security_effect": { "type": "string" },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "callers": { "type": "array", "items": { "type": "string" } },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["claim", "source", "status"],
+        "properties": {
+          "claim": { "type": "string" },
+          "source": { "type": "string" },
+          "status": { "enum": ["observed", "corroborated", "inferred", "unverified"] }
+        },
+        "additionalProperties": false
+      }
+    },
+    "unknowns": { "type": "array", "items": { "type": "string" } }
+  },
+  "$defs": {
+    "binary": {
+      "type": "object",
+      "required": ["version", "sha256"],
+      "properties": {
+        "version": { "type": "string" },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "kb": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Capture Session as Skill"
+  short_description: "Turn a completed workflow into a reusable Skill"
+  default_prompt: "Use $capture-session-skill to turn the workflow from this session into a reusable Agent Skill."

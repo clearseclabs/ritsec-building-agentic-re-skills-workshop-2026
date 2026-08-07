@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://clearseclabs.com/schemas/driver-ioctl-report-1.0.json",
+  "title": "Driver IOCTL Harness Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "target", "entry_path", "dispatch", "ioctls", "c_harness", "validation"],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["binary", "sha256", "platform", "architecture"],
+      "properties": {
+        "binary": { "type": "string" },
+        "sha256": { "type": "string" },
+        "platform": { "enum": ["windows", "linux", "macos"] },
+        "architecture": { "type": "string" }
+      }
+    },
+    "entry_path": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/evidenceFunction" }
+    },
+    "dispatch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["control_function", "control_address", "registration_evidence", "routing_style"],
+      "properties": {
+        "control_function": { "type": ["string", "null"] },
+        "control_address": { "type": ["string", "null"] },
+        "registration_evidence": { "type": "string" },
+        "routing_style": { "enum": ["switch", "table", "comparisons", "computed", "unknown"] }
+      }
+    },
+    "ioctls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code", "handler", "handler_address", "buffer_method", "input_checks", "output_checks", "evidence", "confidence"],
+        "properties": {
+          "code": { "type": "string" },
+          "handler": { "type": ["string", "null"] },
+          "handler_address": { "type": ["string", "null"] },
+          "buffer_method": { "type": "string" },
+          "input_checks": { "type": "array", "items": { "type": "string" } },
+          "output_checks": { "type": "array", "items": { "type": "string" } },
+          "evidence": { "type": "array", "items": { "type": "string" } },
+          "confidence": { "type": "integer", "minimum": 0, "maximum": 100 }
+        }
+      }
+    },
+    "c_harness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["device_path", "source", "compile_notes", "unverified_assumptions"],
+      "properties": {
+        "device_path": { "type": ["string", "null"] },
+        "source": { "type": "string" },
+        "compile_notes": { "type": "array", "items": { "type": "string" } },
+        "unverified_assumptions": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidence_coverage", "unverified", "errors"],
+      "properties": {
+        "evidence_coverage": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "unverified": { "type": "array", "items": { "type": "string" } },
+        "errors": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  },
+  "$defs": {
+    "evidenceFunction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["function", "address", "evidence"],
+      "properties": {
+        "function": { "type": "string" },
+        "address": { "type": "string" },
+        "evidence": { "type": "string" }
+      }
+    }
+  }
+}

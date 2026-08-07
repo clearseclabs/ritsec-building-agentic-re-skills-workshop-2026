@@ -1,0 +1,25 @@
+{
+  "cve": "CVE-2026-44815",
+  "component": "Windows DHCP Client Service (dhcpcore.dll)",
+  "architecture": "x86-64",
+  "branch": "Windows 11 24H2",
+  "binaries": [
+    {
+      "role": "pre-patch",
+      "filename": "dhcpcore.dll.x64.10.0.26100.8521",
+      "version": "10.0.26100.8521",
+      "url": "https://msdl.microsoft.com/download/symbols/dhcpcore.dll/6121CEE175000/dhcpcore.dll",
+      "sha256": "c0fc36971302683b7da6ba62a555a0bb7f1e28db4dfbe45424c11a69fa6abd99"
+    },
+    {
+      "role": "post-patch",
+      "filename": "dhcpcore.dll.x64.10.0.26100.8655",
+      "version": "10.0.26100.8655",
+      "url": "https://msdl.microsoft.com/download/symbols/dhcpcore.dll/652F0FA475000/dhcpcore.dll",
+      "sha256": "d600b0f01f3c9a5877c2171af011f0f63216606acf4ae367827f7f2c3c6655e4"
+    }
+  ],
+  "independent_verifier_url": "https://blog.himanshuanand.com/2026/06/reading-a-patch-tuesday-diff-for-fun-the-dhcp-client-memcpy-that-copies-more-than-four-bytes-cve-2026-44815/",
+  "generated_diff": "https://ritsec-agentic-re-skills.clearseclabs.com/resources/cve-2026-44815-dhcpcore.ghidriff.md",
+  "generated_diff_sha256": "c481a973d67ecacb3d1afe4bc57328f6116eccec11341db639ba8e9d81d10f83"
+}

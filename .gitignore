@@ -1,0 +1,13 @@
+.venv/
+.workshop.env
+.workshop/
+.opencode/opencode.json
+.opencode/skills/
+artifacts/
+harness_*
+workflows/linux-driver-control-surface.txt
+*.gpr
+*.rep/
+__pycache__/
+*.py[cod]
+.DS_Store

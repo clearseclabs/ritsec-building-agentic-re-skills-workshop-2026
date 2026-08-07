@@ -1,0 +1,6 @@
+1. Identify the selected Windows kernel driver — pyghidra-mcp-windows_list_project_binaries; record its hash and analysis status.
+2. Find and decompile DriverEntry — pyghidra-mcp-windows_search_symbols_by_name, then pyghidra-mcp-windows_decompile_function. Trace wrapper entry points when symbols redirect.
+3. Recover the IRP dispatch table — use decompiler and reference evidence to identify MajorFunction assignments and cite the exact setup statements.
+4. Find IRP_MJ_DEVICE_CONTROL routing — decompile the dispatch routine and recover switch, table, or computed routing logic.
+5. Map every observed IOCTL to its handler — decompile each reachable handler, record buffer method, input/output length checks, and user-controlled fields. Preserve unknown mappings instead of guessing.
+6. Build and validate the required C harness — the Skill must produce compilable CreateFile + DeviceIoControl code tied to the observed device path, IOCTL values, buffer method, and input layout. Include driver identity, entry/dispatch path, IOCTL table, function addresses, and validation gaps in the evidence-backed report. Stop when every claim has a tool citation or is marked unverified.

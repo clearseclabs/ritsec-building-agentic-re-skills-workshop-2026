@@ -1,0 +1,72 @@
+Patch Tuesday acquisition and binary-diff workflow
+
+Purpose: turn a Windows CVE identifier into a provenance-checked pre/post binary pair, a focused
+security diff, and an evidence-backed report. Do not assume that an older and newer file form a
+valid patch pair.
+
+1. Inventory workshop evidence before using the network. Search `assets/patch-tuesday-*/manifest.json`
+   for a manifest whose `cve` field matches the request. Search `resources/cve-<CVE>-*.ghidriff.md`
+   for a saved generated Ghidriff diff and `resources/patch-tuesday-report.schema.json` for the
+   required output contract. Record any `independent_verifier_url`, but do not open it or interpret
+   the diff yet.
+2. Resolve the CVE through the exact MSRC Update API endpoint
+   `https://api.msrc.microsoft.com/cvrf/v3.0/updates/<CVE>`. Fetch the linked monthly CVRF document
+   from `https://api.msrc.microsoft.com/cvrf/v3.0/cvrf/<month-id>` and preserve both raw responses
+   under `artifacts/patch-tuesday/msrc/`. Record title, severity, CWE, affected product,
+   architecture, KB, fixed build, and support URL. If either API call fails, label MSRC provenance
+   unavailable and use the matching workshop manifest as supplied fallback evidence. Do not
+   substitute NVD for MSRC or claim that a request succeeded when no raw response was saved.
+3. Resolve the component to a filename. Prefer the file-information manifests linked from the
+   before and after KB pages. Run `python3 scripts/compare-kb-manifests.py --pattern '<filename>'`
+   to preserve both manifests and a JSON comparison under `artifacts/patch-tuesday/`. Use the
+   Winbindex filename index and public symbols as corroboration. Query the exact history endpoint
+   `https://winbindex.m417z.com/data/by_filename_compressed/<filename>.json.gz`, save the response,
+   and record the component-to-filename mapping as observed, inferred, or unresolved. If the
+   network path fails, use the matching workshop manifest and label the fallback.
+4. Select adjacent pre-patch and post-patch versions from the same product branch and architecture.
+   Record versions, timestamps, image sizes, hashes, and Windows/KB provenance. Stop on a branch,
+   architecture, hash, or patch-boundary mismatch.
+5. Acquire the pair. When a matching workshop manifest exists, run
+   `python3 scripts/fetch-patch-pair.py <manifest> artifacts/patch-tuesday/binaries` and require its
+   hash checks to pass. If it cannot run, record the exact failure before using hosted binaries.
+   Otherwise construct Microsoft symbol-server URLs from each PE timestamp and SizeOfImage,
+   download both files, and compute SHA-256. A step is not complete unless its artifact exists or
+   its failure and fallback are recorded.
+6. Open the matching saved generated Ghidriff report found in step 1 and preserve it as supplied
+   diff evidence. The workshop binaries are already loaded in the hosted pre/post MCP project for
+   verification. A separately maintained local Ghidra/Ghidriff environment may generate a fresh
+   report, but this Skill must not require a local GDT or MCP server. Do not improvise an `objdump`,
+   strings, byte-by-byte, or custom raw-binary diff in place of Ghidriff.
+7. Save blind patch hypotheses before reading an advisory explanation. Rank every plausible
+   memory-safety candidate from the generated diff; do not choose one CVE function merely because
+   it appears most severe. For each candidate, cite its exact symbol, compare old and new
+   statements, and trace each changed memory operation through source, destination, destination
+   capacity, controlling length, bounds, and feature gates. Record observed facts, inferences,
+   unknowns, and the current evidence ceiling.
+8. Verify every retained candidate with the hosted PyGhidra-MCP project. Match both project
+   binaries to the manifest, query each exact symbol recovered from the generated diff, decompile
+   it in both versions, then enumerate its direct callers and cross-references. Cite binary,
+   function, address, and tool result. Treat MCP `Executable Location` metadata as server-side
+   provenance, never as a student-local shell path. Do not use broad semantic search when exact
+   diff symbols are available. Cross-references do not prove a network path or RCE.
+9. Reveal the official advisory and the matching manifest's `independent_verifier_url` only after
+   the blind candidates are saved. Use the independent technical report to map the CVE to one of
+   the already verified candidates; do not use NVD as that technical verifier. Compare each claim
+   and correct errors visibly. Do not infer live feature state, network reachability, crashability,
+   exploitability, or RCE from a static diff or RPC-named callers alone.
+10. Write `artifacts/patch-tuesday/report.json` against
+    `resources/patch-tuesday-report.schema.json`. Validate it with
+    `python3 -m json.tool artifacts/patch-tuesday/report.json` and a real JSON Schema validator when
+    available. If `jsonschema` or an equivalent validator is unavailable, label schema validation
+    unavailable rather than treating a hand-written subset check as success. Use `unknown` rather
+    than fluent guesses. Preserve failed calls in the report.
+
+Fallback order: exact MSRC and Winbindex evidence, matching workshop manifest, Ghidriff, saved
+generated Ghidriff diff, hosted pre/post MCP verification, then independent report. Each fallback
+changes the evidence level and must be recorded.
+
+Stop when the best available provenance is labeled honestly, every plausible candidate from the
+generated diff has been checked in both binaries, the independent technical report has mapped the
+CVE to a verified candidate, direct callers have been checked without overstating reachability,
+every reported claim has a citation or is explicitly unknown, the JSON parses, schema validation
+is either successful or honestly unavailable, and the remaining dynamic-analysis gaps are named.
